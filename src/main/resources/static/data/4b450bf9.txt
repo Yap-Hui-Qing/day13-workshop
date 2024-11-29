@@ -1,0 +1,4 @@
+Name: barney
+Email: barney@gmail.com
+Phone Number: 12345678
+Date of Birth: 2004-02-03

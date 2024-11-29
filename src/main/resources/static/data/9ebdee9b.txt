@@ -1,0 +1,4 @@
+Name: fred
+Email: fred@gmail.com
+Phone Number: 12345678
+Date of Birth: 2001-10-28

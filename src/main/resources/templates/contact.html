@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Contact</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+    <form method="post" action="/contact" data-th-object="${contact}">
+        <table>
+            <tr>
+                <td>Name: </td>
+                <td>
+                    <input type="text" data-th-field="*{name}">
+                    <span data-th-if="${#fields.hasErrors('name')}" data-th-errors="*{name}" class="error">
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td>Email: </td>
+                <td>
+                    <input type="email" data-th-field="*{email}">
+                    <span data-th-if="${#fields.hasErrors('email')}" data-th-errors="*{email}"
+                        data-th-errorclass="error">
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td>Phone Number: </td>
+                <td>
+                    <input type="tel" data-th-field="*{phone}">
+                    <span data-th-if="${#fields.hasErrors('phone')}" data-th-errors="*{phone}"
+                        data-th-errorclass="error">
+                </td>
+            </tr>
+            <tr>
+                <td> Date of Birth: </td>
+                <td>
+                    <input type="date" data-th-field="*{dob}">
+                </td>
+                <td>
+                    <span data-th-if="${#fields.hasErrors('dob')}" 
+                            data-th-errors="*{dob}" class="error">
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <button type="submit">Add</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+
+</html>

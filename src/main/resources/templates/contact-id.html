@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact-id</title>
+</head>
+<body>
+    <h1>Contact Information</h1>
+    <table>
+        <tr>
+            <td>ID: <span data-th-text="${id}"></span></td>
+        </tr>
+        <tr>
+            <td>Name: <span data-th-text="${name}"></span></td>
+        </tr>
+        <tr>
+            <td>Email: <span data-th-text="${email}"></span></td>
+        </tr>
+        <tr>
+            <td>Phone number: <span data-th-text="${phone}"></span></td>
+        </tr>
+        <tr>
+            <td>Date of Birth: <span data-th-text="${dob}"></span></td>
+        </tr>
+        <tr>
+            <td>
+                <a href="/contacts">Back</a>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
