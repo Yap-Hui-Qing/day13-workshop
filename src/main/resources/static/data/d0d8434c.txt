@@ -1,4 +1,0 @@
-Name: wilma
-Email: wilma@gmail.com
-Phone Number: 12345678
-Date of Birth: 2003-12-10

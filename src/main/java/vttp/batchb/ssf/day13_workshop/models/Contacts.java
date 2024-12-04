@@ -34,7 +34,7 @@ public class Contacts {
 
     private static final Logger logger = Logger.getLogger(Contacts.class.getName());
 
-    private static final File dataDir = new File("src/main/resources/static/data");
+    // private static final File dataDir = new File("src/main/resources/static/data");
 
     private String id;
 
@@ -101,11 +101,11 @@ public class Contacts {
     // create a file with generated hex string
     public File createFile() {
         String filename = this.id + ".txt";
-        if (!dataDir.exists()) {
-            dataDir.mkdir();
-        } else {
-            logger.info("Directory already exists");
-        }
+        // if (!dataDir.exists()) {
+        //     dataDir.mkdir();
+        // } else {
+        //     logger.info("Directory already exists");
+        // }
         File file = new File(dataDir.getAbsolutePath() + File.separator + filename);
         logger.info("[Contacts] File %s is created".formatted(this.id));
         return file;
