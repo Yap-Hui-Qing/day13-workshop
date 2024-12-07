@@ -4,14 +4,20 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.time.Period;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -23,15 +29,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import vttp.batchb.ssf.day13_workshop.ContactRedis;
 import vttp.batchb.ssf.day13_workshop.models.Contacts;
 import static vttp.batchb.ssf.day13_workshop.models.Contacts.*;
 
 @Controller
 @RequestMapping
 public class ContactController {
+
+    private static final Logger logger = Logger.getLogger(ContactController.class.getName());
+
+    @Autowired
+    private ContactRedis contactRedis;
 
     @GetMapping(path = { "/", "/index.html" })
     public String getIndex(Model model) {
@@ -42,6 +55,8 @@ public class ContactController {
     // task 3
     @PostMapping("/contact")
     public String postContact(@Valid @ModelAttribute("contact") Contacts contact, BindingResult bindings, Model model) {
+
+        logger.info("Contact: %s".formatted(contact.toString()));
 
         if (bindings.hasErrors()) {
             return "contact";
@@ -62,61 +77,52 @@ public class ContactController {
             return "contact";
         }
 
-        // part a
-        String id = UUID.randomUUID().toString().substring(0, 8);
-        contact.setId(id);
+        contactRedis.insertContact(contact);
 
-        // part b
-        File file = contact.createFile();
-
-        try {
-            // part c
-            contact.writeFile(file);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        model.addAttribute("id", id);
+        model.addAttribute("id", contact.getId());
         return "created";
     }
 
     // task 4
     @GetMapping("/contact/{id}")
-    public String getContact(@PathVariable String id, Model model) {
+    public ModelAndView getContact(@PathVariable String id, Model model) throws ParseException {
 
-        File targetFile = getFile(id + ".txt");
-        try {
-            List<String> content = getContents(targetFile);
-            model.addAttribute("id", id);
-            model.addAttribute("name", content.get(0));
-            model.addAttribute("email", content.get(1));
-            model.addAttribute("phone", content.get(2));
-            model.addAttribute("dob", content.get(3));
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        ModelAndView mav = new ModelAndView();
+        Optional<Contacts> opt = contactRedis.getContactById(id);
+        
+        //404
+        if (opt.isEmpty()){
+            mav.setViewName("not-found");
+            mav.setStatus(HttpStatusCode.valueOf(404));
+            mav.addObject("id", id);
+            return mav;
         }
 
-        return "contact-id";
+        Contacts contact = opt.get();
+        // 200
+        mav.setViewName("contact-id");
+        mav.setStatus(HttpStatusCode.valueOf(200));
+        mav.addObject("name", contact.getName());
+        mav.addObject("email", contact.getEmail());
+        mav.addObject("phone", contact.getPhone());
+        mav.addObject("dob", contact.getDob());
+
+        return mav;
     }
 
     @GetMapping("/contacts")
     public String getContacts(Model model){
         
-        List<String> files = getFiles();
-        List<String> names = new LinkedList<>();
+        List<String> contactids = new ArrayList<>(contactRedis.getContactList());
+        model.addAttribute("files", contactids);
 
-        try{
-            for (String s : files){
-                File target = getFile(s + ".txt");
-                List<String> content = getContents(target);
-                names.add(content.get(0)); 
-            }
-        } catch (Exception ex){
-            ex.printStackTrace();
+        List<String> names = new LinkedList<>();
+        for (String id : contactids){
+            String name = contactRedis.getContactName(id);
+            names.add(name);
         }
-        
         model.addAttribute("names", names);
-        model.addAttribute("files", files);
+
         return "contacts";
 
     }

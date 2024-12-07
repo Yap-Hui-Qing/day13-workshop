@@ -21,7 +21,7 @@
             <td>Phone number: <span data-th-text="${phone}"></span></td>
         </tr>
         <tr>
-            <td>Date of Birth: <span data-th-text="${dob}"></span></td>
+            <td>Date of Birth: <span data-th-text="${#dates.format(dob,'dd-MM-yyyy')}"></span></td>
         </tr>
         <tr>
             <td>
